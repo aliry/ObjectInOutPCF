@@ -1,9 +1,10 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
-import { HelloWorld, IHelloWorldProps } from "./HelloWorld";
 import * as React from "react";
+import { MainContainer } from "./MainContainer";
+import { STATIC_DATA } from "./StaticData";
 
 export class ObjectInOutControl implements ComponentFramework.ReactControl<IInputs, IOutputs> {
-    private theComponent: ComponentFramework.ReactControl<IInputs, IOutputs>;
+    private _staticData: Partial<typeof STATIC_DATA> = {};
     private notifyOutputChanged: () => void;
 
     /**
@@ -18,11 +19,9 @@ export class ObjectInOutControl implements ComponentFramework.ReactControl<IInpu
      * @param notifyOutputChanged A callback method to alert the framework that the control has new outputs ready to be retrieved asynchronously.
      * @param state A piece of data that persists in one session for a single user. Can be set at any point in a controls life cycle by calling 'setControlState' in the Mode interface.
      */
-    public init(
-        context: ComponentFramework.Context<IInputs>,
-        notifyOutputChanged: () => void,
-        state: ComponentFramework.Dictionary
+    public init(context: ComponentFramework.Context<IInputs>, notifyOutputChanged: () => void
     ): void {
+        context.mode.trackContainerResize(true);
         this.notifyOutputChanged = notifyOutputChanged;
     }
 
@@ -32,9 +31,13 @@ export class ObjectInOutControl implements ComponentFramework.ReactControl<IInpu
      * @returns ReactElement root react element for the control
      */
     public updateView(context: ComponentFramework.Context<IInputs>): React.ReactElement {
-        const props: IHelloWorldProps = { name: 'Hello, World!' };
-        return React.createElement(
-            HelloWorld, props
+        return React.createElement(MainContainer,
+            {
+                width: context.mode.allocatedWidth,
+                height: context.mode.allocatedHeight,
+                onLoadData: this.onLoadData,
+                onClearData: this.onClearData,
+            }
         );
     }
 
@@ -43,7 +46,9 @@ export class ObjectInOutControl implements ComponentFramework.ReactControl<IInpu
      * @returns an object based on nomenclature defined in manifest, expecting object[s] for property marked as “bound” or “output”
      */
     public getOutputs(): IOutputs {
-        return { };
+        return {
+            StaticData: this._staticData
+        };
     }
 
     /**
@@ -52,5 +57,16 @@ export class ObjectInOutControl implements ComponentFramework.ReactControl<IInpu
      */
     public destroy(): void {
         // Add code to cleanup control if necessary
+    }
+
+    private onLoadData = async () => {
+        this._staticData = STATIC_DATA;
+        this._staticData.loadCounter = (this._staticData.loadCounter || 0) + 1;
+        this.notifyOutputChanged();
+    }
+
+    private onClearData = () => {
+        this._staticData = {};
+        this.notifyOutputChanged();
     }
 }
