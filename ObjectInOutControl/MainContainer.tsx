@@ -17,7 +17,7 @@ export class MainContainer extends React.Component<MainContainerProps> {
 
     return (
       <>
-        <Stack tokens={{ childrenGap: 5 }} styles={{ root: { height, padding: 5 } }}>
+        <Stack tokens={{ childrenGap: 5 }} styles={{ root: { height } }}>
           <Stack.Item grow={false}>
             <PrimaryButton
               text="Load Data"
@@ -30,7 +30,7 @@ export class MainContainer extends React.Component<MainContainerProps> {
               onClick={() => onClearData()}
             />
           </Stack.Item>
-          <Stack.Item>
+          <Stack.Item styles={{ root: { padding: 5 } }}>
             {this.renderObject(inputData)}
           </Stack.Item>
         </Stack>
