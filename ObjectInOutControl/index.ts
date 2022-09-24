@@ -1,7 +1,7 @@
 import { IInputs, IOutputs } from "./generated/ManifestTypes";
 import * as React from "react";
 import { MainContainer } from "./MainContainer";
-import { STATIC_DATA } from "./StaticData";
+import { StaticDataSchema, STATIC_DATA } from "./StaticData";
 
 export class ObjectInOutControl implements ComponentFramework.ReactControl<IInputs, IOutputs> {
     private _staticData: Partial<typeof STATIC_DATA> = {};
@@ -31,12 +31,22 @@ export class ObjectInOutControl implements ComponentFramework.ReactControl<IInpu
      * @returns ReactElement root react element for the control
      */
     public updateView(context: ComponentFramework.Context<IInputs>): React.ReactElement {
+        const inputDataStr = context.parameters.InputData.raw;
+        let inputData = {};
+        if (inputDataStr) {
+            try {
+                inputData = JSON.parse(inputDataStr)
+            }
+            catch { // do nothing
+            }
+        }
         return React.createElement(MainContainer,
             {
                 width: context.mode.allocatedWidth,
                 height: context.mode.allocatedHeight,
                 onLoadData: this.onLoadData,
                 onClearData: this.onClearData,
+                inputData
             }
         );
     }
@@ -49,6 +59,12 @@ export class ObjectInOutControl implements ComponentFramework.ReactControl<IInpu
         return {
             StaticData: this._staticData
         };
+    }
+
+    public async getOutputSchema(context: ComponentFramework.Context<IInputs>): Promise<Record<string, unknown>> {
+        return Promise.resolve({
+            StaticData: StaticDataSchema
+        });
     }
 
     /**

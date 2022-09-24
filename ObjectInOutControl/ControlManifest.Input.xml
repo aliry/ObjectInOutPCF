@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest>
-  <control namespace="SampleNS" constructor="ObjectInOutControl" version="0.0.1" display-name-key="ObjectInOutControl" description-key="ObjectInOutControl description" control-type="virtual" >
+  <control namespace="SampleNS" constructor="ObjectInOutControl" version="0.0.8" display-name-key="ObjectInOutControl" description-key="ObjectInOutControl description" control-type="virtual" >
+    <property name="InputData" display-name-key="InputData" description-key="InputData" of-type="SingleLine.Text" usage="input" hidden="false"/>
+
     <property name="StaticDataSchema" display-name-key="StaticDataSchema" description-key="StaticDataSchema" of-type="SingleLine.Text" usage="input" hidden="true"/>
     <property name="StaticData" display-name-key="StaticData" description-key="StaticData" of-type="Object" usage="output" hidden="false" default-value=""/>
 
